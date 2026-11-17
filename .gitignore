@@ -1,0 +1,46 @@
+# ---------------------------------------------------------------------------
+# Données brutes lourdes — jamais versionnées (7,7 Go)
+# Le notebook les attend dans data/raw/ ; voir HANDOFF.md pour la source.
+# ---------------------------------------------------------------------------
+data/raw/food.parquet
+data/raw/category_subset.parquet
+data/raw/*.bak
+
+# Documents privés (envoyés directement, hors dépôt public)
+HANDOFF.md
+nutriscore_part1_agent_spec.md
+
+# ---------------------------------------------------------------------------
+# Environnement Python
+# ---------------------------------------------------------------------------
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---------------------------------------------------------------------------
+# Jupyter
+# ---------------------------------------------------------------------------
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# ---------------------------------------------------------------------------
+# OS / éditeurs
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# ---------------------------------------------------------------------------
+# Divers
+# ---------------------------------------------------------------------------
+*.log
+tmp/
+_tmp*

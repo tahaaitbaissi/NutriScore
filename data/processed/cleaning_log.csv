@@ -1,0 +1,9 @@
+rule_id,description,justification,n_rows_before,n_rows_after,n_modified
+R1,"Supprimer les grades hors {a,b,c,d,e}",La cible doit être définie (unknown / not-applicable / nul exclus).,27940,23714,4226
+R2,Supprimer les doublons de code (garder le plus récent),Un produit = un code-barres ; la fiche la plus récente est la plus fiable.,23714,23714,0
+R3,Supprimer les valeurs négatives,Une quantité négative est impossible.,23714,23704,10
+R4,Supprimer les valeurs physiquement impossibles,"Énergie > 3 700 kJ, nutriment > 100 g/100 g ou sodium > 40 g : erreur d'unité ou de saisie.",23704,23669,35
+R5,Réconcilier sel / sodium et plafonner fvl_pct à 100,"Sel = 2,5 × sodium (conversion officielle) ; un % > 100 est une estimation, on le borne.",23669,23669,34
+R6,Supprimer les lignes incomplètes sur les 7 entrées de l'algorithme,Aucune imputation des entrées du score : un produit fictif fausserait les seuils.,23669,14611,9058
+R7,Marquer les lignes incohérentes (sans les supprimer),Une incohérence peut être une vraie erreur d'étiquette : utile pour les exceptions.,14611,14611,417
+R8,Renseigner les noms manquants,Lisibilité de l'analyse des exceptions ; product_name n'est pas un attribut.,14611,14611,112

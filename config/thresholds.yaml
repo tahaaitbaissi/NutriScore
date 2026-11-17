@@ -1,0 +1,78 @@
+# =============================================================================
+# Nutri-Score reference thresholds — Part 1 (Taha Ait Baissi)
+# -----------------------------------------------------------------------------
+# Convention (identical for every component):
+#   0 point        <=> value <= thresholds[0]
+#   k points       <=> value >  thresholds[k-1]   (strictly greater)
+# Implemented with bisect.bisect_left(thresholds, value).
+#
+# Sources, both re-verified on 2026-11-17:
+#   * 2023 general-food tables: Arrêté du 14 mars 2025, JORFTEXT000051329233
+#     ("cas général", tables 1 and 2). The 6 and 7 point rows belong to
+#     PROTEIN (>14 g, >17 g); fibre stops at 5 points (>7.4 g).
+#   * 2021 tables: https://world.openfoodfacts.org/nutriscore-formula
+#     ("Nutri-Score formula", Open Food Facts).
+#
+# Known discrepancy in the assignment brief (section 7.1): its table puts the
+# 6/7 point rows (>14, >17) in the fibre column and caps protein at 5. The
+# official arrêté does the opposite: fibre max = 5, protein max = 7 (P max 17).
+# The OFF live API (`nutriscore_data.components`, points_max for fibre = 5)
+# agrees with the arrêté. We therefore implement fibre max 5 / protein max 7.
+# The notebook documents this verification (section 5).
+# =============================================================================
+
+seed: 42
+
+versions:
+  "2023":
+    # Negative component N (max 55)
+    energy_kj:         [335, 670, 1005, 1340, 1675, 2010, 2345, 2680, 3015, 3350]
+    saturated_fat_g:   [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    sugars_g:          [3.4, 6.8, 10, 14, 17, 20, 24, 27, 31, 34, 37, 41, 44, 48, 51]
+    salt_g:            [0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0,
+                        2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0]
+
+    # Positive component P (max 5 + 7 + 5 = 17)
+    fibre_g:           [3.0, 4.1, 5.2, 6.3, 7.4]                 # max 5
+    protein_g:         [2.4, 4.8, 7.2, 9.6, 12, 14, 17]          # max 7
+    fvl_pct:                                                     # fruits, veg, legumes
+      thresholds:      [40, 60, 80]                              # non-linear
+      points:          [1, 2, 5]                                 # >40 -> 1, >60 -> 2, >80 -> 5
+
+    rules:
+      protein_cutoff_n: 11          # N >= 11: protein is not counted
+      protein_always_for_cheese: true
+      red_meat_protein_cap: 2
+
+    grades:                          # A <= 0, B 1-2, C 3-10, D 11-18, E >= 19
+      A_max: 0
+      B_max: 2
+      C_max: 10
+      D_max: 18
+
+  "2021":
+    # Negative component N (max 40)
+    energy_kj:         [335, 670, 1005, 1340, 1675, 2010, 2345, 2680, 3015, 3350]
+    saturated_fat_g:   [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    sugars_g:          [4.5, 9, 13.5, 18, 22.5, 27, 31, 36, 40, 45]
+    sodium_mg:         [90, 180, 270, 360, 450, 540, 630, 720, 810, 900]
+    salt_to_sodium_mg: 400           # sodium_mg = salt_g * 400
+
+    # Positive component P (max 5 + 5 + 5 = 15)
+    fibre_g:           [0.7, 1.4, 2.1, 2.8, 3.5]                 # max 5  (EU / OFF table)
+    fibre_g_aoac:      [0.9, 1.9, 2.8, 3.7, 4.7]                 # alternative AOAC table (not used)
+    protein_g:         [1.6, 3.2, 4.8, 6.4, 8.0]                 # max 5
+    fvl_pct:
+      thresholds:      [40, 60, 80]
+      points:          [1, 2, 5]
+
+    rules:
+      protein_cutoff_n: 11
+      protein_always_for_cheese: true
+      fvl5_protein_exemption: true   # if FVL = 5 points, protein is counted even when N >= 11
+
+    grades:                          # A <= -1, B 0-2, C 3-10, D 11-18, E >= 19
+      A_max: -1
+      B_max: 2
+      C_max: 10
+      D_max: 18
