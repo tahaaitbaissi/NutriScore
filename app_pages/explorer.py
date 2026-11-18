@@ -125,3 +125,4 @@ if len(filtered) > 0:
                 st.write(f"- Fibres : `{prod['fibre']:.2f} g`")
                 st.write(f"- Protéines : `{prod['proteins']:.2f} g`")
                 st.write(f"- % Fruits/légumes/noix : `{prod['fvl_pct']:.1f} %`")
+

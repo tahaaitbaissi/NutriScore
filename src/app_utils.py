@@ -22,3 +22,4 @@ def load_trained_model():
     return clf
 
 INT_TO_GRADE = {0: "A", 1: "B", 2: "C", 3: "D", 4: "E"}
+

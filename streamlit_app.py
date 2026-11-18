@@ -42,3 +42,4 @@ with st.sidebar:
     st.caption("Enseignante : Pr. Hiba El Balbali")
 
 nav.run()
+

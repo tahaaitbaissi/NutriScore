@@ -83,3 +83,4 @@ ax2.set_ylabel("Note officielle OFF")
 plt.tight_layout()
 
 st.pyplot(fig, alt="Matrices de confusion brute et normalisée sur le jeu de test")
+
