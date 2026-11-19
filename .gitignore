@@ -2,6 +2,9 @@
 # Données brutes lourdes — jamais versionnées (7,7 Go)
 # Le notebook les attend dans data/raw/ ; voir HANDOFF.md pour la source.
 # ---------------------------------------------------------------------------
+food.parquet
+*.parquet
+!data/processed/*.parquet
 data/raw/food.parquet
 data/raw/category_subset.parquet
 data/raw/*.bak
