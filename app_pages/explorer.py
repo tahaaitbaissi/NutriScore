@@ -1,16 +1,19 @@
 import streamlit as st
 import pandas as pd
 from src.nutriscore import FEATURES
-from src.app_utils import load_datasets, load_trained_model, INT_TO_GRADE
+from src.app_utils import load_datasets, load_trained_model, add_split_labels, INT_TO_GRADE
 
 train_df, val_df, test_df, clean_df, dis_df = load_datasets()
 clf = load_trained_model()
 
 st.header("Explorateur de produits et diagnostic des exceptions")
-st.caption("Filtrez les 14 611 céréales propres d'Open Food Facts pour auditer les anomalies de saisie et les désaccords.")
+st.caption(
+    "Filtrez les 14 611 céréales propres d'Open Food Facts. Par défaut, les erreurs affichées sont "
+    "**hors échantillon** (validation + test) : le train est disponible pour comparaison, mais l'arbre l'a mémorisé."
+)
 
 # Fast predictions calculation
-clean_view = clean_df.copy()
+clean_view = add_split_labels(clean_df, train_df, val_df, test_df)
 clean_view["pred_int"] = clf.predict(clean_view[list(FEATURES)])
 clean_view["pred_grade"] = clean_view["pred_int"].map(INT_TO_GRADE)
 clean_view["tree_error"] = clean_view["pred_grade"] != clean_view["grade"].astype(str)
@@ -47,8 +50,19 @@ with col_f3:
         default="Toutes"
     )
 
+filter_split = st.segmented_control(
+    "Ensemble d'évaluation",
+    ["Hors entraînement (val+test)", "Test seul", "Tous (y compris train)"],
+    default="Hors entraînement (val+test)"
+)
+
 # Filter application
 filtered = clean_view[clean_view["grade"].astype(str).isin(filter_grade)]
+
+if filter_split == "Hors entraînement (val+test)":
+    filtered = filtered[filtered["split"].isin(["val", "test"])]
+elif filter_split == "Test seul":
+    filtered = filtered[filtered["split"] == "test"]
 
 if search_query:
     q = search_query.strip().lower()
@@ -68,9 +82,11 @@ elif filter_anomaly == "Désaccord calculateur":
     filtered = filtered[filtered["calc_disagreement"]]
 
 st.write(f"**{len(filtered):,} produits** trouvés.")
+if len(filtered) > 0:
+    st.caption(f"Taux d'erreur de l'arbre sur cette sélection : {100 * filtered['tree_error'].mean():.2f} %")
 
 cols_show = [
-    "code", "product_name", "grade", "pred_grade", "off_score",
+    "code", "product_name", "grade", "pred_grade", "split", "off_score",
     "score_v2023", "sugars", "sat_fat", "fibre", "salt",
     "suspect_consistency", "countries"
 ]
@@ -83,6 +99,7 @@ st.dataframe(
         "product_name": st.column_config.TextColumn("Nom du produit"),
         "grade": st.column_config.TextColumn("Note OFF"),
         "pred_grade": st.column_config.TextColumn("Note arbre"),
+        "split": st.column_config.TextColumn("Ensemble"),
         "off_score": st.column_config.NumberColumn("Score OFF"),
         "score_v2023": st.column_config.NumberColumn("Score 2023"),
         "sugars": st.column_config.NumberColumn("Sucres (g)"),
@@ -108,7 +125,7 @@ if len(filtered) > 0:
         with detail_col1:
             with st.container(border=True):
                 st.write(f"**Produit** : {prod['product_name']}")
-                st.caption(f"Code-barres : `{prod['code']}` | Pays : `{prod['countries']}`")
+                st.caption(f"Code-barres : `{prod['code']}` | Pays : `{prod['countries']}` | Ensemble : `{prod['split']}`")
                 st.write(f"- Note déclarée OFF : `{prod['grade']}` (Score : `{prod['off_score']}`)")
                 st.write(f"- Note prédite par l'arbre : `{prod['pred_grade']}`")
                 st.write(f"- Recalcul officiel 2023 : `{prod['grade_v2023']}` (Score : `{prod['score_v2023']}`)")

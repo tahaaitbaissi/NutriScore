@@ -4,7 +4,7 @@ import numpy as np
 import yaml
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from src.nutriscore import FEATURES
 from src.app_utils import load_datasets, load_trained_model
 
@@ -69,6 +69,12 @@ st.subheader("Matrice de confusion sur le jeu de test (2 192 produits)")
 y_test_pred = clf.predict(test_df[list(FEATURES)])
 cm = confusion_matrix(test_df["y_int"], y_test_pred)
 cm_norm = confusion_matrix(test_df["y_int"], y_test_pred, normalize="true")
+
+st.caption(
+    f"Test ({len(test_df):,} produits) : accuracy "
+    f"{100 * accuracy_score(test_df['y_int'], y_test_pred):.2f} % | "
+    f"F1 macro {f1_score(test_df['y_int'], y_test_pred, average='macro'):.4f}"
+)
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5))
 sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=["A","B","C","D","E"], yticklabels=["A","B","C","D","E"], ax=ax1)

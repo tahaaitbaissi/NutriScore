@@ -19,7 +19,7 @@ preset = st.selectbox(
         "Granola chocolat & noisettes (Note attendue C)",
         "Pétales de maïs givrés au sucre (Note attendue D)",
         "Céréales fourrées chocolatées (Note attendue E)",
-        "Trink Porridge (Exception connue D vs A)"
+        "Trink Porridge (OFF applique le barème boisson)"
     ]
 )
 
@@ -36,15 +36,23 @@ defaults = {
 if preset == "Flocons d'avoine purs (Note attendue A)":
     defaults = {"energy_kj": 1500.0, "sat_fat": 1.3, "sugars": 1.0, "salt": 0.02, "fibre": 10.0, "proteins": 12.0, "fvl_pct": 0.0}
 elif preset == "Muesli fruits secs (Note attendue B)":
-    defaults = {"energy_kj": 1550.0, "sat_fat": 2.0, "sugars": 12.0, "salt": 0.15, "fibre": 7.5, "proteins": 9.0, "fvl_pct": 25.0}
+    defaults = {"energy_kj": 1600.0, "sat_fat": 2.0, "sugars": 12.0, "salt": 0.20, "fibre": 7.0, "proteins": 8.0, "fvl_pct": 20.0}
 elif preset == "Granola chocolat & noisettes (Note attendue C)":
-    defaults = {"energy_kj": 1850.0, "sat_fat": 4.5, "sugars": 18.0, "salt": 0.40, "fibre": 5.0, "proteins": 8.5, "fvl_pct": 0.0}
+    defaults = {"energy_kj": 1850.0, "sat_fat": 4.0, "sugars": 18.0, "salt": 0.40, "fibre": 7.0, "proteins": 8.5, "fvl_pct": 0.0}
 elif preset == "Pétales de maïs givrés au sucre (Note attendue D)":
     defaults = {"energy_kj": 1650.0, "sat_fat": 0.6, "sugars": 37.0, "salt": 0.85, "fibre": 2.5, "proteins": 5.0, "fvl_pct": 0.0}
 elif preset == "Céréales fourrées chocolatées (Note attendue E)":
     defaults = {"energy_kj": 1950.0, "sat_fat": 7.5, "sugars": 42.0, "salt": 0.95, "fibre": 2.0, "proteins": 4.5, "fvl_pct": 0.0}
-elif preset == "Trink Porridge (Exception connue D vs A)":
+elif preset == "Trink Porridge (OFF applique le barème boisson)":
     defaults = {"energy_kj": 1515.0, "sat_fat": 1.1, "sugars": 9.3, "salt": 0.02, "fibre": 11.0, "proteins": 11.0, "fvl_pct": 0.0}
+
+if preset == "Trink Porridge (OFF applique le barème boisson)":
+    st.info(
+        "OFF classe ce produit en **boisson** (`is_beverage = 1`) : sa fiche affiche **D (score 7)** avec le "
+        "barème boisson, plus sévère. Le simulateur compare ici le **barème général 2023** (A) et l'arbre (A) : "
+        "c'est un conflit de catégorie, pas une erreur de nutriments.",
+        icon=":material/info:",
+    )
 
 col_neg, col_pos = st.columns(2)
 
