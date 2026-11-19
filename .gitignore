@@ -5,6 +5,7 @@
 food.parquet
 *.parquet
 !data/processed/*.parquet
+!data/raw/category_*.parquet
 data/raw/food.parquet
 data/raw/category_subset.parquet
 data/raw/*.bak
@@ -35,6 +36,8 @@ __pycache__/
 # ---------------------------------------------------------------------------
 # OS / éditeurs
 # ---------------------------------------------------------------------------
+.agents/
+.claude/
 .DS_Store
 Thumbs.db
 desktop.ini
