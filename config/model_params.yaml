@@ -1,0 +1,13 @@
+ccp_alpha: 0.00012851175681492861
+random_state: 42
+n_leaves: 717
+features:
+- energy_kj
+- sat_fat
+- sugars
+- salt
+- fibre
+- proteins
+- fvl_pct
+target: y_int
+selection: F1 macro maximal sur validation
